@@ -17,7 +17,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title} — Jeremy Zhang</title>
+  <title>{title}</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><g stroke='black' stroke-width='6' stroke-linecap='round' transform='translate(32,32)'><line x1='0' y1='-22' x2='0' y2='22'/><line x1='0' y1='-22' x2='0' y2='22' transform='rotate(60)'/><line x1='0' y1='-22' x2='0' y2='22' transform='rotate(120)'/></g></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -101,10 +101,16 @@ def format_date(date_str):
     return dt.strftime("%b ") + str(dt.day) + dt.strftime(", %Y"), dt
 
 
+def slugify(title):
+    slug = title.lower().strip()
+    slug = re.sub(r"[^a-z0-9]+", "-", slug)
+    return slug.strip("-")
+
+
 def build_post(md_path):
     meta, body_md = parse_frontmatter(md_path.read_text())
-    slug = md_path.stem
     title = meta["title"]
+    slug = slugify(title)
     subtitle = meta.get("subtitle", "")
     date_display, date_obj = format_date(meta["date"])
     body_html = markdown_to_html(body_md)
@@ -126,7 +132,7 @@ def build_post(md_path):
 def render_card(post):
     return (
         '      <div class="article-card">\n'
-        f'        <a class="article-title" href="{post["slug"]}/">{post["title"]}</a>\n'
+        f'        <a class="article-title" href="{post["slug"]}">{post["title"]}</a>\n'
         f'        <div class="article-subtitle">{post["subtitle"]}</div>\n'
         f'        <div class="article-date">{post["date_display"]}</div>\n'
         "      </div>"
@@ -151,6 +157,13 @@ def update_index(posts):
 def main():
     md_files = sorted(POSTS_DIR.glob("*.md"))
     posts = [build_post(f) for f in md_files]
+
+    seen = {}
+    for p in posts:
+        if p["slug"] in seen:
+            raise ValueError(f'Slug collision: "{seen[p["slug"]]}" and "{p["title"]}" both slugify to "{p["slug"]}"')
+        seen[p["slug"]] = p["title"]
+
     update_index(posts)
     for p in posts:
         print(f"built {p['slug']}/index.html")
