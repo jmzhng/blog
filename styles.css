@@ -35,25 +35,21 @@ body {
 .site-header {
   margin-bottom: 2.5rem;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.7rem;
+  font-size: 1rem;
+  color: var(--text-soft);
 }
 
 .site-nav a {
-  color: var(--text);
+  color: var(--text-soft);
   text-decoration: none;
-  font-size: 1.5rem;
   font-weight: 400;
 }
 .site-nav a:hover {
   color: var(--accent);
   text-decoration: none;
-}
-.site-nav .sep {
-  margin: 0 0.85rem;
-  color: rgba(0,0,0,0.25);
-  user-select: none;
-  font-size: 1.5rem;
 }
 
 /* ---------- Generic links ---------- */
@@ -70,20 +66,22 @@ a:hover { text-decoration: underline; }
   display: block;
   padding: 1.5rem 0;
   border-bottom: 1px solid rgba(0,0,0,0.08);
-  color: var(--text);
-  text-decoration: none;
 }
 .article-list .article-card:first-child { padding-top: 0; }
 .article-list .article-card:last-child { border-bottom: none; }
 
-.article-card:hover { text-decoration: none; }
-.article-card:hover .article-title { color: var(--accent); }
-
 .article-title {
+  display: block;
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.3;
   margin-bottom: 0.5rem;
+  color: var(--text);
+  text-decoration: none;
+}
+.article-title:hover {
+  color: var(--accent);
+  text-decoration: none;
 }
 
 .article-subtitle {
@@ -140,7 +138,6 @@ a:hover { text-decoration: underline; }
 /* ---------- Responsive ---------- */
 @media (max-width: 540px) {
   .container { padding: 3rem 1.25rem 5rem; }
-  .site-nav a, .site-nav .sep { font-size: 1.25rem; }
   .article-title { font-size: 1.25rem; }
   .article-page-title { font-size: 1.6rem; }
 }
