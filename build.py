@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build posts/*.md into <slug>/index.html and regenerate the home page list.
+"""Build posts/*.md into <slug>.html and regenerate the home page list.
 
 Usage: python3 build.py
 """
@@ -23,7 +23,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="container">
@@ -117,9 +117,7 @@ def build_post(md_path):
     body_html = markdown_to_html(body_md)
 
     page = PAGE_TEMPLATE.format(title=title, date_display=date_display, body=body_html)
-    out_dir = ROOT / slug
-    out_dir.mkdir(exist_ok=True)
-    (out_dir / "index.html").write_text(page)
+    (ROOT / f"{slug}.html").write_text(page)
 
     return {
         "slug": slug,
@@ -133,7 +131,7 @@ def build_post(md_path):
 def render_card(post):
     return (
         '      <div class="article-card">\n'
-        f'        <a class="article-title" href="{post["slug"]}">{post["title"]}</a>\n'
+        f'        <a class="article-title" href="{post["slug"]}.html">{post["title"]}</a>\n'
         f'        <div class="article-subtitle">{post["subtitle"]}</div>\n'
         f'        <div class="article-date">{post["date_display"]}</div>\n'
         "      </div>"
@@ -183,7 +181,7 @@ def main():
 
     update_index(posts)
     for p in posts:
-        print(f"built {p['slug']}/index.html")
+        print(f"built {p['slug']}.html")
     print(f"updated index.html with {len(posts)} post(s)")
 
     push_to_origin()
