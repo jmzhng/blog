@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Build posts/*.md into <slug>.html and regenerate the home page list.
+"""Build Obsidian vault posts into p/<slug>.html and regenerate the home page list.
+
+Post sources live outside this repo, in the Obsidian vault. Only the
+generated HTML is committed here.
 
 Usage: python3 build.py
 """
@@ -10,7 +13,8 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).parent
-POSTS_DIR = ROOT / "posts"
+POSTS_DIR = Path("/Users/jeremy/Documents/Obsidian/zettelkasten/_blog")
+OUT_DIR = ROOT / "p"
 INDEX_FILE = ROOT / "index.html"
 
 PAGE_TEMPLATE = """<!DOCTYPE html>
@@ -23,7 +27,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="../styles.css" />
 </head>
 <body>
   <main class="container">
@@ -117,7 +121,8 @@ def build_post(md_path):
     body_html = markdown_to_html(body_md)
 
     page = PAGE_TEMPLATE.format(title=title, date_display=date_display, body=body_html)
-    (ROOT / f"{slug}.html").write_text(page)
+    OUT_DIR.mkdir(exist_ok=True)
+    (OUT_DIR / f"{slug}.html").write_text(page)
 
     return {
         "slug": slug,
@@ -131,7 +136,7 @@ def build_post(md_path):
 def render_card(post):
     return (
         '      <div class="article-card">\n'
-        f'        <a class="article-title" href="{post["slug"]}.html">{post["title"]}</a>\n'
+        f'        <a class="article-title" href="p/{post["slug"]}.html">{post["title"]}</a>\n'
         f'        <div class="article-subtitle">{post["subtitle"]}</div>\n'
         f'        <div class="article-date">{post["date_display"]}</div>\n'
         "      </div>"
@@ -181,7 +186,7 @@ def main():
 
     update_index(posts)
     for p in posts:
-        print(f"built {p['slug']}.html")
+        print(f"built p/{p['slug']}.html")
     print(f"updated index.html with {len(posts)} post(s)")
 
     push_to_origin()
